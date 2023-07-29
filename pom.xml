@@ -21,6 +21,7 @@
     <module>redisson-basic</module>
     <module>redis-common</module>
     <module>redis-cluster</module>
+    <module>redis-spring-cache</module>
   </modules>
 
 </project>
