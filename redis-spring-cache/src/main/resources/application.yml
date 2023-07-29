@@ -42,3 +42,11 @@ logging:
       wangtao:
         redis: debug
 
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: delFlg
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+
+

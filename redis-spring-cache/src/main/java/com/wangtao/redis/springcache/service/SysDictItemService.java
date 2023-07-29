@@ -40,15 +40,13 @@ public class SysDictItemService {
         check(dictCode, dictItemValue);
         Wrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<SysDictItem>()
                 .eq(SysDictItem::getDictCode, dictCode)
-                .eq(SysDictItem::getDictItemValue, dictItemValue)
-                .eq(SysDictItem::getDelFlg, 1);
+                .eq(SysDictItem::getDictItemValue, dictItemValue);
         return sysDictItemMapper.selectOne(queryWrapper);
     }
 
     public List<SysDictItem> selectByDictCode(String dictCode) {
         Wrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<SysDictItem>()
-                .eq(SysDictItem::getDictCode, dictCode)
-                .eq(SysDictItem::getDelFlg, 1);
+                .eq(SysDictItem::getDictCode, dictCode);
         return sysDictItemMapper.selectList(queryWrapper);
     }
 
@@ -64,8 +62,7 @@ public class SysDictItemService {
                 .set(SysDictItem::getDictItemName, sysDictItem.getDictItemName())
                 .set(SysDictItem::getUpdateTime, sysDictItem.getUpdateTime())
                 .eq(SysDictItem::getDictCode, sysDictItem.getDictCode())
-                .eq(SysDictItem::getDictItemValue, sysDictItem.getDictItemValue())
-                .eq(SysDictItem::getDelFlg, 1);
+                .eq(SysDictItem::getDictItemValue, sysDictItem.getDictItemValue());
         sysDictItem.setUpdateTime(LocalDateTime.now());
         sysDictItemMapper.update(null, updateWrapper);
     }
