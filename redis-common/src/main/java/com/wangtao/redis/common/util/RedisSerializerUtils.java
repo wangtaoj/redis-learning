@@ -37,12 +37,8 @@ public final class RedisSerializerUtils {
 
     }
 
-    public static GenericJackson2JsonRedisSerializer create() {
+    public static ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
-        // objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
-        objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,
-                ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
-
         // 设置java.util.Date时间类的序列化以及反序列化的格式
         objectMapper.setDateFormat(new SimpleDateFormat(STANDARD_PATTERN));
 
@@ -81,6 +77,25 @@ public final class RedisSerializerUtils {
 
         // 忽略反序列化时在json字符串中存在, 但在java对象中不存在的属性
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        return new GenericJackson2JsonRedisSerializer(objectMapper);
+
+        /*
+         * 序列化时给不是final修饰的类以及类中的字段添加@class属性
+         * 形如{"@class": "xxx.User", username: "", org: {"@class": "xxx.Org", "orgname": ""}}
+         * 因为final修饰的类不能被继承, 可以根据字段类型拿到具体类型, 不存在多态, 可以不用加@class来标识具体的类型
+         * 注: 如果最外层对象类型本身就被final修饰, 那么序列化后的字符串就没有
+         * @class属性, 同时反序列化时不指定具体的类型则会报错, 不像root里面的字段可以通过字段类型来推断
+         * 参见: ObjectMapper文件中的useForType方法
+         * objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+         */
+        objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,
+                ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+
+        // 增加NullValue类型支持, 被final修饰的类在序列化时默认不带类型, 反序列化回来会报错
+        GenericJackson2JsonRedisSerializer.registerNullValueSerializer(objectMapper, null);
+        return objectMapper;
+    }
+
+    public static GenericJackson2JsonRedisSerializer create() {
+        return new GenericJackson2JsonRedisSerializer(objectMapper());
     }
 }
