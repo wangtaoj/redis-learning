@@ -29,7 +29,7 @@ public class SysDictItemService {
 
     /**
      * 查询并添加缓存(缓存命中则直接返回)
-     * 操作缓存都是目标方法执行成功之后再进行的
+     * 添加缓存肯定是目标方法执行成功之后再进行的
      *
      * @param dictCode      字典类型
      * @param dictItemValue 字典明细值
@@ -52,7 +52,9 @@ public class SysDictItemService {
 
     /**
      * 更新字典明细并删除缓存
-     *
+     * 删除缓存的时机是通过beforeInvocation属性控制, 默认false
+     * beforeInvocation = false, 目标方法执行成功之后进行
+     * beforeInvocation = true， 目标方法执行之前进行
      * @param sysDictItem 字典实体
      */
     @CacheEvict(key = "#sysDictItem.dictCode.concat(':').concat(#sysDictItem.dictItemValue)")
